@@ -8,7 +8,27 @@ CORS(app)
 
 noticeURL = "https://iiitn.ac.in/news.php"
 feesURL = "https://iiitn.ac.in//page.php?name=fees&id=42"
+calendarURL = "https://iiitn.ac.in//page.php?name=academic-calendar&id=257"
 
+@app.route('/acadmic-calendar',methods=['GET'])
+def getCalander():
+    try:
+        req = requests.get(calendarURL)
+        lis = []
+        soup = BeautifulSoup(req.content,'html.parser')
+        container = soup.find('div',class_ = "panel-body")
+
+        for ele in container.find_all('tbody'):
+            for td in ele.find_all('td'):
+                strong = td.find('strong')
+                if strong:
+                    atag = strong.find('a')
+                    if atag:
+                        link = atag['href']
+                        lis.append(link)
+        return jsonify(lis)
+    except:
+        return "Can't reach the server right now"
 
 @app.route('/fees', methods=['GET'])
 def getFees():
